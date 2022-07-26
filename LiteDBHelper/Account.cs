@@ -10,7 +10,7 @@ namespace LiteDBHelper
     {
         public int Id { get; set; }
     }
-    public class Account
+    public class Account: BaseModel
     {
         public string AccountCategory { get; set; }
         public string AccountName { get; set; }

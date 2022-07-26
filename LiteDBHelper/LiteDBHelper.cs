@@ -9,15 +9,15 @@ namespace LiteDBHelper
 {
     public class LiteDBHelper
     {
-        private static readonly string dbName = "ac.db";
-        private string _aesKey;
-        private string _dbPwd;
+        private string _dbName = "ac.db";
         private ConnectionString _connection;
-        public LiteDBHelper(string aesKey, string dbPwd)
+        public LiteDBHelper(string? dbPwd, string? dbName = null)
         {
-            _aesKey = aesKey;
-            _dbPwd = dbPwd;
-            var path = Path.Combine(Environment.CurrentDirectory, dbName);
+            if (dbName!=null)
+            {
+                _dbName = dbName; 
+            }
+            var path = Path.Combine(Environment.CurrentDirectory, _dbName);
             _connection = new ConnectionString
             {
                 Filename = path,
@@ -29,6 +29,62 @@ namespace LiteDBHelper
             }
         }
 
+        public IEnumerable<Account> GetAccounts(string category)
+        {
+            using (var db = new LiteDatabase(_connection))
+            {
+                var col = db.GetCollection<Account>();
+                return col.Find(p => p.AccountCategory == category).ToList();
+            }
+        }
 
+        public List<string> GetCategories()
+        {
+            using (var db = new LiteDatabase(_connection))
+            {
+                var col = db.GetCollection<Account>();
+
+                return col.FindAll().Select(p => p.AccountCategory).ToList();
+            }
+        }
+
+        public int Insert(Account account)
+        {
+            using (var db = new LiteDatabase(_connection))
+            {
+                var col = db.GetCollection<Account>();
+                if (!col.Exists(p => p.AccountCategory == account.AccountCategory && p.AccountName == account.AccountName))
+                {
+                    return col.Insert(account);
+                }
+                return 0;
+            }
+        }
+
+        public bool Update(Account account)
+        {
+            using (var db = new LiteDatabase(_connection))
+            {
+                var col = db.GetCollection<Account>();
+                if (col.Exists(p => p.Id == account.Id))
+                {
+                    return col.Update(account);
+                }
+                return false;
+            }
+        }
+
+        public bool Delete(Account account)
+        {
+            using (var db = new LiteDatabase(_connection))
+            {
+                var col = db.GetCollection<Account>();
+                if (col.Exists(p => p.Id == account.Id))
+                {
+                    return col.Delete(account.Id);
+                }
+                return false;
+            }
+        }
     }
 }
