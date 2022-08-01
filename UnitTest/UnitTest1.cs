@@ -58,7 +58,7 @@ namespace UnitTest
             });
 
             var categories=service.GetCategories();
-            Assert.AreEqual(2, categories.Count);
+            Assert.AreEqual(2, categories.Count());
             Assert.IsTrue(categories.Any(p=>p== "test1"));
             Assert.IsTrue(categories.Any(p=>p== "test2"));
 
@@ -78,7 +78,7 @@ namespace UnitTest
             Assert.AreEqual(true, d2);
 
             var categoriesDeleted = service.GetCategories();
-            Assert.AreEqual(0, categoriesDeleted.Count);
+            Assert.AreEqual(0, categoriesDeleted.Count());
         }
     }
 }

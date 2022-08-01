@@ -58,7 +58,7 @@ namespace LiteDBHelper
         }
 
 
-        public List<string> GetCategories()
+        public IEnumerable<string> GetCategories()
         {
             return _dbHelper.GetCategories();
         }

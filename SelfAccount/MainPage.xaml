@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="SelfAccount.MainPage">
 
-    <ScrollView>
+    <!--<ScrollView>
         <VerticalStackLayout
             Spacing="25"
             Padding="30,0"
@@ -36,6 +36,65 @@
                 HorizontalOptions="Center" />
 
         </VerticalStackLayout>
-    </ScrollView>
+    </ScrollView>-->
 
+    <StackLayout Orientation="Vertical">
+        <Grid Margin="5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="8*"></ColumnDefinition>
+                <ColumnDefinition Width="2*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Entry x:Name="searchEntry" Placeholder="请输入" Margin="5" Text="{Binding SearchText, Mode=TwoWay}">
+
+            </Entry>
+            <Button Grid.Column="1" x:Name="searchBtn" Text="搜索" Margin="5" Command="{Binding SearchCommand}"></Button>
+        </Grid>
+        <ProgressBar Margin="10"/>
+        <Label Text="种类:" Margin="10"></Label>
+        <ListView VerticalOptions="Center" ItemsSource="{Binding AccountCategoies}" SelectedItem="{Binding SelectedCategory, Mode=TwoWay}">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <TextCell Text="{Binding Path=.}" />
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+        <ProgressBar Margin="10"/>
+        <Label Text="内容:" Margin="10"></Label>
+        <ListView ItemsSource="{Binding Accounts}"  VerticalOptions="Center">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ViewCell>
+                        <StackLayout Orientation="Horizontal">
+                            <Entry Text="{Binding AccountName} "></Entry>
+                            <Entry Text="{Binding AccountValue} "></Entry>
+                        </StackLayout>
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+        <Grid Margin="5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="50"></ColumnDefinition>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Label Text="种类:"></Label><Entry Grid.Column="1" Text="{Binding InputCategory}"></Entry>
+        </Grid>
+        <Grid Margin="5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="50"></ColumnDefinition>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Label Text="名称:"></Label>
+            <Entry Grid.Column="1" Text="{Binding InputName}"></Entry>
+        </Grid>
+        <Grid Margin="5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="50"></ColumnDefinition>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Label Text="值:"></Label>
+            <Entry Grid.Column="1" Text="{Binding InputValue}"></Entry>
+        </Grid>
+        <Button Text="添加" Command="{Binding AddCommand}"></Button>
+    </StackLayout>
 </ContentPage>

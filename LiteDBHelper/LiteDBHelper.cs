@@ -38,7 +38,7 @@ namespace LiteDBHelper
             }
         }
 
-        public List<string> GetCategories()
+        public IEnumerable<string> GetCategories()
         {
             using (var db = new LiteDatabase(_connection))
             {
