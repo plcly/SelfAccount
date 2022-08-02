@@ -15,12 +15,16 @@ namespace SelfAccount
     public class MainPageViewModel : INotifyPropertyChanged
     {
         private AccountService _accountService;
+        private bool _isSearching;
+
+
         public event PropertyChangedEventHandler PropertyChanged;
         public MainPageViewModel()
         {
             _accountService = new AccountService(Config.Key, Config.IV, Config.DBPwd, Config.DBName);
-            AccountCategoies = new ObservableCollection<string>();
-            Accounts = new ObservableCollection<LiteDBHelper.Account>();
+            AccountCategoies = new ObservableCollection<string>(_accountService.GetCategories());
+            SelectedCategory = AccountCategoies.FirstOrDefault();
+            Accounts = new ObservableCollection<Account>();
         }
 
         private string _inputCategory;
@@ -63,9 +67,9 @@ namespace SelfAccount
 
         void ExecuteAddCommand()
         {
-            if (!string.IsNullOrEmpty(InputCategory)&& !string.IsNullOrEmpty(InputName) && !string.IsNullOrEmpty(InputValue) )
+            if (!string.IsNullOrEmpty(InputCategory) && !string.IsNullOrEmpty(InputName) && !string.IsNullOrEmpty(InputValue))
             {
-                var ac = new LiteDBHelper.Account
+                var ac = new Account
                 {
                     AccountCategory = InputCategory,
                     AccountName = InputName,
@@ -73,17 +77,29 @@ namespace SelfAccount
                 };
                 _accountService.Insert(ac);
                 Refresh();
+                InputCategory = String.Empty;
+                InputName = String.Empty;
+                InputValue = String.Empty;
             }
-            
+
+        }
+
+        private ICommand _deleteCommand;
+        public ICommand DeleteCommand =>
+            _deleteCommand ?? (_deleteCommand = new Command(ExecuteDeleteCommand));
+
+        void ExecuteDeleteCommand()
+        {
         }
 
         private void Refresh()
         {
-            if (!string.IsNullOrEmpty(SelectedCategory))
+            if (!_isSearching && !string.IsNullOrEmpty(SelectedCategory))
             {
                 var ac = _accountService.GetAccounts(SelectedCategory);
-                Accounts = new ObservableCollection<LiteDBHelper.Account>(ac);
+                Accounts = new ObservableCollection<Account>(ac);
             }
+            _isSearching = false;
         }
 
         private string _searchText;
@@ -106,9 +122,8 @@ namespace SelfAccount
             set
             {
                 _selectedCategory = value;
-                Refresh();
-                
                 OnPropertyChanged();
+                Refresh();
             }
         }
 
@@ -125,9 +140,9 @@ namespace SelfAccount
 
             }
         }
-        private ObservableCollection<LiteDBHelper.Account> _accounts;
+        private ObservableCollection<Account> _accounts;
 
-        public ObservableCollection<LiteDBHelper.Account> Accounts
+        public ObservableCollection<Account> Accounts
         {
             get { return _accounts; }
             set
@@ -144,18 +159,27 @@ namespace SelfAccount
         void ExecuteSearchCommand()
         {
 
-            if (!string.IsNullOrEmpty(SearchText))
+            if (string.IsNullOrEmpty(SearchText))
             {
                 AccountCategoies = new ObservableCollection<string>(_accountService.GetCategories());
+                SelectedCategory = AccountCategoies.FirstOrDefault();
+            }
+            else
+            {
+                var acs = _accountService.SearchAccounts(SearchText);
+                Accounts = new ObservableCollection<Account>(acs);
+                _isSearching = true;
+                AccountCategoies = new ObservableCollection<string>(new[] { "搜索结果" });
+                //SelectedCategory = "搜索结果";
             }
 
         }
 
         private ICommand _copyCommad;
         public ICommand CopyCommad =>
-            _copyCommad ?? (_copyCommad = new Command<LiteDBHelper.Account>(ExecuteCopyCommad));
+            _copyCommad ?? (_copyCommad = new Command<Account>(ExecuteCopyCommad));
 
-        void ExecuteCopyCommad(LiteDBHelper.Account account)
+        void ExecuteCopyCommad(Account account)
         {
 
         }

@@ -44,7 +44,7 @@ namespace LiteDBHelper
             {
                 var col = db.GetCollection<Account>();
 
-                return col.FindAll().Select(p => p.AccountCategory).ToList();
+                return col.FindAll().Select(p => p.AccountCategory).Distinct().ToList();
             }
         }
 
@@ -84,6 +84,14 @@ namespace LiteDBHelper
                     return col.Delete(account.Id);
                 }
                 return false;
+            }
+        }
+
+        public IEnumerable<Account> GetAllAccounts()
+        {
+            using (var db = new LiteDatabase(_connection))
+            {
+                return db.GetCollection<Account>().FindAll().ToList();
             }
         }
     }

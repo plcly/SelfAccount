@@ -57,20 +57,24 @@ namespace UnitTest
                 AccountValue = "1234asdf"
             });
 
-            var categories=service.GetCategories();
-            Assert.AreEqual(2, categories.Count());
+            var categories=service.GetCategories().ToList();
+            Assert.AreEqual(2, categories.Count);
             Assert.IsTrue(categories.Any(p=>p== "test1"));
             Assert.IsTrue(categories.Any(p=>p== "test2"));
 
             var accounts1 = service.GetAccounts("test1").ToList();
-            Assert.AreEqual(1, accounts1.Count());
+            Assert.AreEqual(1, accounts1.Count);
             Assert.AreEqual("a@a.a", accounts1.First().AccountName);
             Assert.AreEqual("asdf1234", accounts1.First().AccountValue);
 
             var accounts2 = service.GetAccounts("test2").ToList();
-            Assert.AreEqual(1, accounts2.Count());
+            Assert.AreEqual(1, accounts2.Count);
             Assert.AreEqual("b@b.b", accounts2.First().AccountName);
             Assert.AreEqual("1234asdf", accounts2.First().AccountValue);
+
+            var searchAccounts = service.SearchAccounts("a").ToList();
+            Assert.AreEqual(1, searchAccounts.Count);
+            Assert.AreEqual("a@a.a", accounts1.First().AccountName);
 
             var d1 = service.Delete(accounts1.First());
             var d2 = service.Delete(accounts2.First());

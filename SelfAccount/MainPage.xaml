@@ -60,18 +60,21 @@
         </ListView>
         <ProgressBar Margin="10"/>
         <Label Text="内容:" Margin="10"></Label>
-        <ListView ItemsSource="{Binding Accounts}"  VerticalOptions="Center">
+        <ListView ItemsSource="{Binding Accounts, Mode=TwoWay}"  VerticalOptions="Center">
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <ViewCell>
                         <StackLayout Orientation="Horizontal">
                             <Entry Text="{Binding AccountName} "></Entry>
                             <Entry Text="{Binding AccountValue} "></Entry>
+                            <Button Text="删除" Margin="20,0,0,0" Command="{Binding DeleteCommand}" ></Button>
                         </StackLayout>
                     </ViewCell>
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
+        <ProgressBar Margin="10"/>
+        <ProgressBar Margin="10"/>
         <Grid Margin="5">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="50"></ColumnDefinition>

@@ -37,27 +37,6 @@ namespace LiteDBHelper
             }
         }
 
-        private Account DecryptAccount(Account account)
-        {
-            var decrypted = new Account();
-            decrypted.Id = account.Id;
-            decrypted.AccountCategory = account.AccountCategory;
-            decrypted.AccountName = EncryptUtils.DecryptStringAES(account.AccountName, _key, cipherMode, _iv, paddingMode);
-            decrypted.AccountValue = EncryptUtils.DecryptStringAES(account.AccountValue, _key, cipherMode, _iv, paddingMode);
-            return decrypted;
-        }
-
-        private Account EncryptAccount(Account account)
-        {
-            var encrypted = new Account();
-            encrypted.Id = account.Id;
-            encrypted.AccountCategory = account.AccountCategory;
-            encrypted.AccountName = EncryptUtils.EncryptStringAES(account.AccountName, _key, cipherMode, _iv, paddingMode);
-            encrypted.AccountValue = EncryptUtils.EncryptStringAES(account.AccountValue, _key, cipherMode, _iv, paddingMode);
-            return encrypted;
-        }
-
-
         public IEnumerable<string> GetCategories()
         {
             return _dbHelper.GetCategories();
@@ -78,6 +57,42 @@ namespace LiteDBHelper
         public bool Delete(Account account)
         {
             return _dbHelper.Delete(account);
+        }
+
+
+        private Account DecryptAccount(Account account)
+        {
+            var decrypted = new Account();
+            decrypted.Id = account.Id;
+            decrypted.AccountCategory = account.AccountCategory;
+            decrypted.AccountName = EncryptUtils.DecryptStringAES(account.AccountName, _key, cipherMode, _iv, paddingMode);
+            decrypted.AccountValue = EncryptUtils.DecryptStringAES(account.AccountValue, _key, cipherMode, _iv, paddingMode);
+            return decrypted;
+        }
+
+        private Account EncryptAccount(Account account)
+        {
+            var encrypted = new Account();
+            encrypted.Id = account.Id;
+            encrypted.AccountCategory = account.AccountCategory;
+            encrypted.AccountName = EncryptUtils.EncryptStringAES(account.AccountName, _key, cipherMode, _iv, paddingMode);
+            encrypted.AccountValue = EncryptUtils.EncryptStringAES(account.AccountValue, _key, cipherMode, _iv, paddingMode);
+            return encrypted;
+        }
+
+        public IEnumerable<Account> SearchAccounts(string searchText)
+        {
+            var ac = GetAllAccounts().Where(p => p.AccountName.Contains(searchText));
+            return ac;
+        }
+        
+        public IEnumerable<Account> GetAllAccounts()
+        {
+            var accounts = _dbHelper.GetAllAccounts();
+            foreach (var account in accounts)
+            {
+                yield return DecryptAccount(account);
+            }
         }
     }
 }
