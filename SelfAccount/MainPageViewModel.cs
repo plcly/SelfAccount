@@ -21,10 +21,19 @@ namespace SelfAccount
         public event PropertyChangedEventHandler PropertyChanged;
         public MainPageViewModel()
         {
-            _accountService = new AccountService(Config.Key, Config.IV, Config.DBPwd, Config.DBName);
-            AccountCategoies = new ObservableCollection<string>(_accountService.GetCategories());
-            SelectedCategory = AccountCategoies.FirstOrDefault();
-            Accounts = new ObservableCollection<Account>();
+            try
+            {
+
+                _accountService = new AccountService(Config.Key, Config.IV, Config.DBPwd, Config.DBName);
+                AccountCategoies = new ObservableCollection<string>(_accountService.GetCategories());
+                SelectedCategory = AccountCategoies.FirstOrDefault();
+                Accounts = new ObservableCollection<Account>();
+            }
+            catch (Exception ex)
+            {
+            }
+            
+
         }
 
         private string _inputCategory;
@@ -86,10 +95,12 @@ namespace SelfAccount
 
         private ICommand _deleteCommand;
         public ICommand DeleteCommand =>
-            _deleteCommand ?? (_deleteCommand = new Command(ExecuteDeleteCommand));
+            _deleteCommand ?? (_deleteCommand = new Command<Account>(ExecuteDeleteCommand));
 
-        void ExecuteDeleteCommand()
+        void ExecuteDeleteCommand(Account account)
         {
+            _accountService.Delete(account);
+            Refresh();
         }
 
         private void Refresh()
