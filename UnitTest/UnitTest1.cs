@@ -34,8 +34,9 @@ namespace UnitTest
             Assert.AreEqual("0d9a7115c63fea859cb225644202c16f", s.ToLower());
             d = EncryptUtils.DecryptStringAES(s, key, System.Security.Cryptography.CipherMode.CBC, "1234123412341234");
             Assert.AreEqual(text, d);
-        }
 
+
+        }
         [TestMethod]
         public void TestAccountService()
         {
@@ -48,12 +49,14 @@ namespace UnitTest
             {
                 AccountCategory = "test1",
                 AccountName = "a@a.a",
+                AccountKey = "asdf1234",
                 AccountValue = "asdf1234"
             });
             service.Insert(new Account
             {
                 AccountCategory = "test2",
                 AccountName = "b@b.b",
+                AccountKey = "1234asdf",
                 AccountValue = "1234asdf"
             });
 

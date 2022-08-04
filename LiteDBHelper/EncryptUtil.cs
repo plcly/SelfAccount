@@ -140,7 +140,7 @@ namespace LiteDBHelper
                 iv = IV;
             }
             if (encryptedString == null || encryptedString.Length <= 0)
-                throw new ArgumentNullException("encryptedString");
+                return String.Empty;
             string plaintext = null;
             var cipherText = HexToByte(encryptedString);
             using (Aes aes = Aes.Create())

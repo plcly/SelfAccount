@@ -19,20 +19,26 @@ namespace SelfAccount
 
 
         public event PropertyChangedEventHandler PropertyChanged;
-        public MainPageViewModel()
+        public MainPageViewModel(string key, string iv, Action<string> action)
         {
             try
             {
-
-                _accountService = new AccountService(Config.Key, Config.IV, Config.DBPwd, Config.DBName);
+                if (string.IsNullOrWhiteSpace(iv))
+                {
+                    iv = Config.IV;
+                }
+                var status = Permissions.CheckStatusAsync<Permissions.StorageRead>().Result;
+                var statusWrite = Permissions.CheckStatusAsync<Permissions.StorageWrite>().Result;
+                _accountService = new AccountService(key, iv, Config.DBPwd, Config.DBName);
                 AccountCategoies = new ObservableCollection<string>(_accountService.GetCategories());
                 SelectedCategory = AccountCategoies.FirstOrDefault();
                 Accounts = new ObservableCollection<Account>();
             }
             catch (Exception ex)
             {
+                action(ex.Message);
             }
-            
+
 
         }
 
@@ -58,6 +64,18 @@ namespace SelfAccount
                 OnPropertyChanged();
             }
         }
+
+        private string _inputKey;
+
+        public string InputKey
+        {
+            get { return _inputKey; }
+            set
+            {
+                _inputKey = value;
+                OnPropertyChanged();
+            }
+        }
         private string _inputValue;
 
         public string InputValue
@@ -70,24 +88,31 @@ namespace SelfAccount
             }
         }
 
+
+
         private ICommand _addCommand;
         public ICommand AddCommand =>
             _addCommand ?? (_addCommand = new Command(ExecuteAddCommand));
 
         void ExecuteAddCommand()
         {
-            if (!string.IsNullOrEmpty(InputCategory) && !string.IsNullOrEmpty(InputName) && !string.IsNullOrEmpty(InputValue))
+            if (!string.IsNullOrEmpty(InputCategory) 
+                && !string.IsNullOrEmpty(InputName) 
+                && !string.IsNullOrEmpty(InputKey) 
+                && !string.IsNullOrEmpty(InputValue))
             {
                 var ac = new Account
                 {
                     AccountCategory = InputCategory,
                     AccountName = InputName,
+                    AccountKey = InputKey,
                     AccountValue = InputValue,
                 };
                 _accountService.Insert(ac);
                 Refresh();
                 InputCategory = String.Empty;
                 InputName = String.Empty;
+                InputKey = String.Empty;
                 InputValue = String.Empty;
             }
 

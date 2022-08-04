@@ -13,9 +13,9 @@ namespace LiteDBHelper
         private ConnectionString _connection;
         public LiteDBHelper(string? dbPwd, string? dbName = null)
         {
-            if (dbName!=null)
+            if (dbName != null)
             {
-                _dbName = dbName; 
+                _dbName = dbName;
             }
             var path = Path.Combine(Environment.CurrentDirectory, _dbName);
             _connection = new ConnectionString
@@ -53,11 +53,7 @@ namespace LiteDBHelper
             using (var db = new LiteDatabase(_connection))
             {
                 var col = db.GetCollection<Account>();
-                if (!col.Exists(p => p.AccountCategory == account.AccountCategory && p.AccountName == account.AccountName))
-                {
-                    return col.Insert(account);
-                }
-                return 0;
+                return col.Insert(account);
             }
         }
 
