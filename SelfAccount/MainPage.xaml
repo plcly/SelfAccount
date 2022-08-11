@@ -49,8 +49,8 @@
                                         <ColumnDefinition Width="1*"></ColumnDefinition>
                                     </Grid.ColumnDefinitions>
                                     <Entry Text="{Binding AccountName}" Margin="10,0,10,0"></Entry>
-                                    <Entry Grid.Column="1" Text="{Binding AccountKey}" Margin="10,0,10,0"></Entry>
-                                    <Entry Grid.Column="2" Text="{Binding AccountValue}" Margin="10,0,10,0"></Entry>
+                                    <Editor Grid.Column="1" Text="{Binding AccountKey}" Margin="10,0,10,0" AutoSize="TextChanges" HeightRequest="50"></Editor>
+                                    <Editor Grid.Column="2" Text="{Binding AccountValue}" Margin="10,0,10,0" AutoSize="TextChanges" HeightRequest="50" ></Editor>
                                     <Button Text="删除"  Grid.Column="3" Margin="10,0,10,0"
                                     Command="{Binding DeleteCommand, Source={RelativeSource AncestorType={x:Type vm:MainPageViewModel}}}"
                                     CommandParameter="{Binding}" ></Button>
