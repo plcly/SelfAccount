@@ -5,6 +5,7 @@
              x:Class="SelfAccount.MainPage">
     <ScrollView>
         <StackLayout>
+            <Label x:Name="DbPath"></Label>
             <Grid x:Name="loadGrid"  Margin="5,10,5,5">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="1*"></ColumnDefinition>

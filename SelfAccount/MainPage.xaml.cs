@@ -12,7 +12,7 @@ public partial class MainPage : ContentPage
         Task.WaitAll(s,r);
         InitializeComponent();
         MessageAction = ShowMessage;
-
+        DbPath.Text = Config.DBName;
 
     }
 
