@@ -9,40 +9,43 @@ public partial class MainPage : ContentPage
     {
         var s = Permissions.RequestAsync<Permissions.StorageRead>();
         var r = Permissions.RequestAsync<Permissions.StorageWrite>();
-        Task.WaitAll(s,r);
+        Task.WaitAll(s, r);
         InitializeComponent();
         MessageAction = ShowMessage;
         DbPath.Text = Config.DBName;
-
+        keyEntry.Focus();
     }
 
     private void ShowMessage(string msg)
     {
-        DisplayAlert("Error:",msg,"OK");
+        DisplayAlert("Error:", msg, "OK");
     }
 
     private void Button_Clicked(object sender, EventArgs e)
+    {
+        ShowContent();
+    }
+
+    private void keyEntry_Completed(object sender, EventArgs e)
+    {
+        ShowContent();
+    }
+
+    private void ShowContent()
     {
         if (!string.IsNullOrEmpty(keyEntry.Text))
         {
             BindingContext = new MainPageViewModel(keyEntry.Text, ivEntry.Text, MessageAction);
             loadGrid.IsVisible = false;
             contentStack.IsVisible = true;
+            searchEntry.Focus();
         }
-        
     }
 
-
-    //private void OnCounterClicked(object sender, EventArgs e)
-    //{
-    //	count++;
-
-    //	if (count == 1)
-    //		CounterBtn.Text = $"Clicked {count} time";
-    //	else
-    //		CounterBtn.Text = $"Clicked {count} times";
-
-    //	SemanticScreenReader.Announce(CounterBtn.Text);
-    //}
+    private void searchEntry_Completed(object sender, EventArgs e)
+    {
+        var vm = BindingContext as MainPageViewModel;
+        vm.SearchCommand.Execute(null);
+    }
 }
 

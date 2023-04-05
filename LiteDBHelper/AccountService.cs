@@ -84,7 +84,7 @@ namespace LiteDBHelper
 
         public IEnumerable<Account> SearchAccounts(string searchText)
         {
-            var ac = GetAllAccounts().Where(p => p.AccountName.Contains(searchText));
+            var ac = GetAllAccounts().Where(p => p.AccountName.Contains(searchText, StringComparison.OrdinalIgnoreCase));
             return ac;
         }
         

@@ -1,100 +1,196 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:vm ="SelfAccount.MainPageViewModel"
-             x:Class="SelfAccount.MainPage">
+<ContentPage
+    x:Class="SelfAccount.MainPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:vm="SelfAccount.MainPageViewModel">
     <ScrollView>
         <StackLayout>
-            <Label x:Name="DbPath"></Label>
-            <Grid x:Name="loadGrid"  Margin="5,10,5,5">
+            <Label x:Name="DbPath">
+            </Label>
+            <Grid x:Name="loadGrid" Margin="5,10,5,5">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="1*"></ColumnDefinition>
-                    <ColumnDefinition Width="1*"></ColumnDefinition>
-                    <ColumnDefinition Width="1*"></ColumnDefinition>
+                    <ColumnDefinition Width="1*">
+                    </ColumnDefinition>
+                    <ColumnDefinition Width="1*">
+                    </ColumnDefinition>
+                    <ColumnDefinition Width="1*">
+                    </ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                <Entry x:Name="keyEntry" Margin="10,0,10,0" Placeholder="Key"></Entry>
-                <Entry Grid.Column="1" x:Name="ivEntry" Placeholder="IV" Margin="10,0,10,0"></Entry>
-                <Button x:Name="btnLoad" Text="加载" Clicked="Button_Clicked"  Grid.Column="2" Margin="10,0,10,0" ></Button>
+                <Entry
+                    x:Name="keyEntry"
+                    Margin="10,0,10,0"
+                    Completed="keyEntry_Completed"
+                    Placeholder="Key">
+                </Entry>
+                <Entry
+                    x:Name="ivEntry"
+                    Grid.Column="1"
+                    Margin="10,0,10,0"
+                    Completed="keyEntry_Completed"
+                    Placeholder="IV">
+                </Entry>
+                <Button
+                    x:Name="btnLoad"
+                    Grid.Column="2"
+                    Margin="10,0,10,0"
+                    Clicked="Button_Clicked"
+                    Text="加载">
+                </Button>
             </Grid>
-            <StackLayout x:Name="contentStack" IsVisible="false" Orientation="Vertical">
+            <StackLayout
+                x:Name="contentStack"
+                IsVisible="false"
+                Orientation="Vertical">
                 <Grid Margin="5">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="8*"></ColumnDefinition>
-                        <ColumnDefinition Width="2*"></ColumnDefinition>
+                        <ColumnDefinition Width="8*">
+                        </ColumnDefinition>
+                        <ColumnDefinition Width="2*">
+                        </ColumnDefinition>
                     </Grid.ColumnDefinitions>
-                    <Entry x:Name="searchEntry"  Placeholder="请输入" Margin="5" Text="{Binding SearchText, Mode=TwoWay}">
+                    <Entry
+                        x:Name="searchEntry"
+                        Margin="5"
+                        Completed="searchEntry_Completed"
+                        Placeholder="请输入"
+                        Text="{Binding SearchText, Mode=TwoWay}">
 
                     </Entry>
-                    <Button Grid.Column="1" x:Name="searchBtn" Text="搜索" Margin="5" Command="{Binding SearchCommand}"></Button>
+                    <Button
+                        x:Name="searchBtn"
+                        Grid.Column="1"
+                        Margin="5"
+                        Command="{Binding SearchCommand}"
+                        Text="搜索">
+                    </Button>
                 </Grid>
-                <ProgressBar Margin="10"/>
-                <Label Text="种类:" Margin="10"></Label>
-                <ListView VerticalOptions="Center" ItemsSource="{Binding AccountCategoies}" SelectedItem="{Binding SelectedCategory, Mode=TwoWay}">
+                <ProgressBar Margin="10" />
+                <Label Margin="10" Text="种类:">
+                </Label>
+                <ListView
+                    ItemsSource="{Binding AccountCategoies}"
+                    SelectedItem="{Binding SelectedCategory, Mode=TwoWay}"
+                    VerticalOptions="Center">
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <TextCell Text="{Binding Path=.}" />
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
-                <ProgressBar Margin="10"/>
-                <Label Text="内容:" Margin="10"></Label>
-                <ListView ItemsSource="{Binding Accounts, Mode=TwoWay}"  VerticalOptions="Center" SelectionMode="None">
+                <ProgressBar Margin="10" />
+                <Label Margin="10" Text="内容:">
+                </Label>
+                <ListView
+                    ItemsSource="{Binding Accounts, Mode=TwoWay}"
+                    SelectionMode="None"
+                    VerticalOptions="Center">
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <ViewCell>
-                                <Grid >
+                                <Grid>
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="1*"></ColumnDefinition>
-                                        <ColumnDefinition Width="1*"></ColumnDefinition>
-                                        <ColumnDefinition Width="1*"></ColumnDefinition>
-                                        <ColumnDefinition Width="1*"></ColumnDefinition>
+                                        <ColumnDefinition Width="1*">
+                                        </ColumnDefinition>
+                                        <ColumnDefinition Width="1*">
+                                        </ColumnDefinition>
+                                        <ColumnDefinition Width="1*">
+                                        </ColumnDefinition>
+                                        <ColumnDefinition Width="1*">
+                                        </ColumnDefinition>
                                     </Grid.ColumnDefinitions>
-                                    <Entry Text="{Binding AccountName}" Margin="10,0,10,0"></Entry>
-                                    <Editor Grid.Column="1" Text="{Binding AccountKey}" Margin="10,0,10,0" AutoSize="TextChanges" HeightRequest="50"></Editor>
-                                    <Editor Grid.Column="2" Text="{Binding AccountValue}" Margin="10,0,10,0" AutoSize="TextChanges" HeightRequest="50" ></Editor>
-                                    <Button Text="删除"  Grid.Column="3" Margin="10,0,10,0"
-                                    Command="{Binding DeleteCommand, Source={RelativeSource AncestorType={x:Type vm:MainPageViewModel}}}"
-                                    CommandParameter="{Binding}" ></Button>
+                                    <Entry Margin="10,0,10,0" Text="{Binding AccountName}">
+                                    </Entry>
+                                    <Editor
+                                        Grid.Column="1"
+                                        Margin="10,0,10,0"
+                                        AutoSize="TextChanges"
+                                        HeightRequest="50"
+                                        Text="{Binding AccountKey}">
+                                    </Editor>
+                                    <Editor
+                                        Grid.Column="2"
+                                        Margin="10,0,10,0"
+                                        AutoSize="TextChanges"
+                                        HeightRequest="50"
+                                        Text="{Binding AccountValue}">
+                                    </Editor>
+                                    <Button
+                                        Grid.Column="3"
+                                        Margin="10,0,10,0"
+                                        Command="{Binding DeleteCommand, Source={RelativeSource AncestorType={x:Type vm:MainPageViewModel}}}"
+                                        CommandParameter="{Binding}"
+                                        Text="删除">
+                                    </Button>
                                 </Grid>
                             </ViewCell>
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
-                <ProgressBar Margin="10"/>
-                <ProgressBar Margin="10"/>
+                <ProgressBar Margin="10" />
+                <ProgressBar Margin="10" />
                 <Grid Margin="5">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="50"></ColumnDefinition>
-                        <ColumnDefinition Width="*"></ColumnDefinition>
+                        <ColumnDefinition Width="50">
+                        </ColumnDefinition>
+                        <ColumnDefinition Width="*">
+                        </ColumnDefinition>
                     </Grid.ColumnDefinitions>
-                    <Label Text="种类:"></Label>
-                    <Entry Grid.Column="1" Text="{Binding InputCategory}" Placeholder="请输入"></Entry>
+                    <Label Text="种类:">
+                    </Label>
+                    <Entry
+                        Grid.Column="1"
+                        Placeholder="请输入"
+                        Text="{Binding InputCategory}">
+                    </Entry>
                 </Grid>
                 <Grid Margin="5">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="50"></ColumnDefinition>
-                        <ColumnDefinition Width="*"></ColumnDefinition>
+                        <ColumnDefinition Width="50">
+                        </ColumnDefinition>
+                        <ColumnDefinition Width="*">
+                        </ColumnDefinition>
                     </Grid.ColumnDefinitions>
-                    <Label Text="名称:"></Label>
-                    <Entry Grid.Column="1" Text="{Binding InputName}" Placeholder="请输入"></Entry>
+                    <Label Text="名称:">
+                    </Label>
+                    <Entry
+                        Grid.Column="1"
+                        Placeholder="请输入"
+                        Text="{Binding InputName}">
+                    </Entry>
                 </Grid>
                 <Grid Margin="5">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="50"></ColumnDefinition>
-                        <ColumnDefinition Width="*"></ColumnDefinition>
+                        <ColumnDefinition Width="50">
+                        </ColumnDefinition>
+                        <ColumnDefinition Width="*">
+                        </ColumnDefinition>
                     </Grid.ColumnDefinitions>
-                    <Label Text="账号:"></Label>
-                    <Entry Grid.Column="1" Text="{Binding InputKey}" Placeholder="请输入"></Entry>
+                    <Label Text="账号:">
+                    </Label>
+                    <Entry
+                        Grid.Column="1"
+                        Placeholder="请输入"
+                        Text="{Binding InputKey}">
+                    </Entry>
                 </Grid>
                 <Grid Margin="5">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="50"></ColumnDefinition>
-                        <ColumnDefinition Width="*"></ColumnDefinition>
+                        <ColumnDefinition Width="50">
+                        </ColumnDefinition>
+                        <ColumnDefinition Width="*">
+                        </ColumnDefinition>
                     </Grid.ColumnDefinitions>
-                    <Label Text="密码:"></Label>
-                    <Entry Grid.Column="1" Text="{Binding InputValue}" Placeholder="请输入"></Entry>
+                    <Label Text="密码:">
+                    </Label>
+                    <Entry
+                        Grid.Column="1"
+                        Placeholder="请输入"
+                        Text="{Binding InputValue}">
+                    </Entry>
                 </Grid>
-                <Button Text="添加" Command="{Binding AddCommand}"></Button>
+                <Button Command="{Binding AddCommand}" Text="添加">
+                </Button>
             </StackLayout>
         </StackLayout>
     </ScrollView>
