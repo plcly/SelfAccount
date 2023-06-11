@@ -1,0 +1,49 @@
+﻿@page "/fetchdata"
+
+@using SelfAccountHybrid.Data
+@using LiteDBHelper
+@inject WeatherForecastService ForecastService
+
+<h1>Weather forecast</h1>
+
+<p>This component demonstrates fetching data from a service.</p>
+
+@if (accounts == null)
+{
+	<p><em>Loading...</em></p>
+}
+else
+{
+	<table class="table">
+		<thead>
+			<tr>
+				<th>类型</th>
+				<th>名称</th>
+				<th>Key</th>
+				<th>Value</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var ac in accounts)
+			{
+				<tr>
+					<td>@ac.AccountCategory</td>
+					<td>@ac.AccountName</td>
+					<td>@ac.AccountKey</td>
+					<td>@ac.AccountValue</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}
+
+@code {
+	private Account[] accounts;
+
+	protected override async Task OnInitializedAsync()
+	{
+		var _accountService = new AccountService(Config.Key, Config.IV, Config.DBPwd, Config.DBName);
+
+		accounts = _accountService.GetAllAccounts().ToArray();
+	}
+}
