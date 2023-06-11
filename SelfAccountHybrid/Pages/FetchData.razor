@@ -1,49 +1,101 @@
-﻿@page "/fetchdata"
+﻿@page "/"
 
-@using SelfAccountHybrid.Data
 @using LiteDBHelper
-@inject WeatherForecastService ForecastService
 
-<h1>Weather forecast</h1>
+<p></p>
+<div class="input-group mb-3">
+    <span class="input-group-text">Search</span>
+    <input type="text" class="form-control" placeholder="@placeHolder" @onkeyup="SearchData" @bind="searchText" />
+</div>
 
-<p>This component demonstrates fetching data from a service.</p>
 
 @if (accounts == null)
 {
-	<p><em>Loading...</em></p>
+    <p><em>@Message</em></p>
 }
 else
 {
-	<table class="table">
-		<thead>
-			<tr>
-				<th>类型</th>
-				<th>名称</th>
-				<th>Key</th>
-				<th>Value</th>
-			</tr>
-		</thead>
-		<tbody>
-			@foreach (var ac in accounts)
-			{
-				<tr>
-					<td>@ac.AccountCategory</td>
-					<td>@ac.AccountName</td>
-					<td>@ac.AccountKey</td>
-					<td>@ac.AccountValue</td>
-				</tr>
-			}
-		</tbody>
-	</table>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>类型</th>
+                <th>名称</th>
+                <th>Key</th>
+                <th>Value</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var ac in result)
+            {
+                <tr>
+                    <td>@ac.AccountCategory</td>
+                    <td>@ac.AccountName</td>
+                    <td>@ac.AccountKey</td>
+                    <td>@ac.AccountValue</td>
+                </tr>
+            }
+        </tbody>
+    </table>
 }
 
 @code {
-	private Account[] accounts;
+    private Account[] accounts;
+    private Account[] result;
+    private string searchText;
+    private string placeHolder;
+    private string Message;
+    AccountService service;
+    protected override async Task OnInitializedAsync()
+    {
+        placeHolder = "请输入Key";
+        Message = "请输入Key";
+    }
 
-	protected override async Task OnInitializedAsync()
-	{
-		var _accountService = new AccountService(Config.Key, Config.IV, Config.DBPwd, Config.DBName);
+    private void Init()
+    {
+        try
+        {
+            service = new AccountService(searchText, Config.IV, Config.DBPwd, Config.DBName);
+            accounts = service.GetAllAccounts().ToArray();
+            result = accounts;
+            ResetSearch();
+        }
+        catch (Exception ex)
+        {
+            service = null;
+            Message = ex.Message;
+        }
 
-		accounts = _accountService.GetAllAccounts().ToArray();
-	}
+    }
+
+    private void ResetSearch()
+    {
+        searchText = string.Empty;
+        placeHolder = "请输入搜索关键词";
+    }
+
+    private void SearchData(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            if (service == null)
+            {
+                Init();
+                return;
+            }
+            if (string.IsNullOrEmpty(searchText))
+            {
+                result = accounts;
+            }
+            else
+            {
+                result = accounts.Where(p => p.AccountName.Contains(searchText, StringComparison.OrdinalIgnoreCase)
+                                            || p.AccountKey.Contains(searchText, StringComparison.OrdinalIgnoreCase)
+                                            || p.AccountCategory.Contains(searchText, StringComparison.OrdinalIgnoreCase))
+                                .ToArray();
+                ResetSearch();
+            }
+
+        }
+    }
 }

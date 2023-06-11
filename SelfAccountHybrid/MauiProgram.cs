@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Components.WebView.Maui;
-using SelfAccountHybrid.Data;
 
 namespace SelfAccountHybrid
 {
@@ -19,8 +18,6 @@ namespace SelfAccountHybrid
 #if DEBUG
 		builder.Services.AddBlazorWebViewDeveloperTools();
 #endif
-
-            builder.Services.AddSingleton<WeatherForecastService>();
 
             return builder.Build();
         }
