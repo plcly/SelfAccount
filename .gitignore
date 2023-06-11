@@ -363,3 +363,4 @@ MigrationBackup/
 FodyWeavers.xsd
 /SelfAccount/Config.cs
 /UnitTest/DebugErrorTest.cs
+/SelfAccountHybrid/Config.cs
