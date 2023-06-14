@@ -1,50 +1,45 @@
 ﻿@page "/"
 
 @using LiteDBHelper
+<MudStack Style="width:auto">
+<MudStack row Class="d-flex flex-grow-1">
 
-<p></p>
-<div class="input-group mb-3">
-    <span class="input-group-text">Search</span>
-    <input type="text" class="form-control" placeholder="@placeHolder" @onkeyup="SearchData" @bind="searchText" />
-</div>
+    <MudTextField class="flex-grow-1" @bind-Value="SearchText" @ref="TxtSearch" Placeholder="@placeHolder" Variant="Variant.Text" @onkeyup="SearchData" Adornment="Adornment.Start"
+                  AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Tertiary"></MudTextField>
+
+    <MudButton class="mt-5" Color="Color.Primary" Variant="Variant.Filled" @onclick="SearchDataClick">搜索</MudButton>
+
+</MudStack>
 
 
-@if (accounts == null)
+
+@if (result == null)
 {
     <p><em>@Message</em></p>
 }
 else
 {
-    <table class="table">
-        <thead>
-            <tr>
-                <th>类型</th>
-                <th>名称</th>
-                <th>Key</th>
-                <th>Value</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var ac in result)
-            {
-                <tr>
-                    <td>@ac.AccountCategory</td>
-                    <td>@ac.AccountName</td>
-                    <td>@ac.AccountKey</td>
-                    <td>@ac.AccountValue</td>
-                </tr>
-            }
-        </tbody>
-    </table>
+    <MudDataGrid Items="@result">
+        <Columns>
+            <PropertyColumn Property="x => x.AccountCategory" Title="类型" />
+            <PropertyColumn Property="x => x.AccountName" Title="名称" />
+            <PropertyColumn Property="x => x.AccountKey" Title="Key" />
+            <PropertyColumn Property="x => x.AccountValue" Title="Value" />
+        </Columns>
+    </MudDataGrid>
+
 }
+</MudStack>
 
 @code {
     private Account[] accounts;
     private Account[] result;
-    private string searchText;
+    public string SearchText { get; set; }
     private string placeHolder;
     private string Message;
     AccountService service;
+    public MudTextField<string> TxtSearch { get; set; }
+    public MudIconButton BtnSearch { get; set; }
     protected override async Task OnInitializedAsync()
     {
         placeHolder = "请输入Key";
@@ -55,7 +50,7 @@ else
     {
         try
         {
-            service = new AccountService(searchText, Config.IV, Config.DBPwd, Config.DBName);
+            service = new AccountService(SearchText, Config.IV, Config.DBPwd, Config.DBName);
             accounts = service.GetAllAccounts().ToArray();
             result = accounts;
             ResetSearch();
@@ -70,32 +65,37 @@ else
 
     private void ResetSearch()
     {
-        searchText = string.Empty;
+        SearchText = string.Empty;
         placeHolder = "请输入搜索关键词";
+        TxtSearch.Clear();
+    }
+
+    private void SearchDataClick()
+    {
+        if (service == null)
+        {
+            Init();
+            return;
+        }
+        if (string.IsNullOrEmpty(SearchText))
+        {
+            result = accounts;
+        }
+        else
+        {
+            result = accounts.Where(p => p.AccountName.Contains(SearchText, StringComparison.OrdinalIgnoreCase)
+                                        || p.AccountKey.Contains(SearchText, StringComparison.OrdinalIgnoreCase)
+                                        || p.AccountCategory.Contains(SearchText, StringComparison.OrdinalIgnoreCase))
+                            .ToArray();
+            ResetSearch();
+        }
     }
 
     private void SearchData(KeyboardEventArgs e)
     {
         if (e.Key == "Enter")
         {
-            if (service == null)
-            {
-                Init();
-                return;
-            }
-            if (string.IsNullOrEmpty(searchText))
-            {
-                result = accounts;
-            }
-            else
-            {
-                result = accounts.Where(p => p.AccountName.Contains(searchText, StringComparison.OrdinalIgnoreCase)
-                                            || p.AccountKey.Contains(searchText, StringComparison.OrdinalIgnoreCase)
-                                            || p.AccountCategory.Contains(searchText, StringComparison.OrdinalIgnoreCase))
-                                .ToArray();
-                ResetSearch();
-            }
-
+            SearchDataClick();
         }
     }
 }

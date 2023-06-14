@@ -50,6 +50,10 @@
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="MudBlazor" Version="6.4.1" />
+    </ItemGroup>
+
+    <ItemGroup>
       <ProjectReference Include="..\LiteDBHelper\LiteDBHelper.csproj" />
     </ItemGroup>
 

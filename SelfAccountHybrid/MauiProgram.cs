@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components.WebView.Maui;
+using MudBlazor.Services;
 
 namespace SelfAccountHybrid
 {
@@ -18,6 +19,7 @@ namespace SelfAccountHybrid
 #if DEBUG
 		builder.Services.AddBlazorWebViewDeveloperTools();
 #endif
+            builder.Services.AddMudServices();
 
             return builder.Build();
         }
