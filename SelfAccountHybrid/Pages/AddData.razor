@@ -1,10 +1,40 @@
 ﻿@page "/AddData"
+@using LiteDBHelper
 
-
-<h3>AddData</h3>
-<p>
-    Not Implement
-</p>
+<MudStack Class="pa-5">
+    <MudText Typo="Typo.h3">AddData</MudText>
+    <MudForm Model="newAccount" @ref="@addForm">
+        <MudTextField Required="true" @bind-Value="newAccount.AccountCategory" Immediate="true" Label="类型"></MudTextField>
+        <MudTextField Required="true" @bind-Value="newAccount.AccountName" Immediate="true" Label="名称"></MudTextField>
+        <MudTextField Required="true" @bind-Value="newAccount.AccountKey" Immediate="true" Label="Key"></MudTextField>
+        <MudTextField Required="true" @bind-Value="newAccount.AccountValue" Immediate="true" Label="Value"></MudTextField>
+    </MudForm>
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@(async () => await Submit())">添加</MudButton>
+    <MudMessageBox @ref="MBox" Title="未初始化">
+        <MessageContent>
+            请先初始化
+        </MessageContent>
+    </MudMessageBox>
+</MudStack>
 @code {
+    MudForm addForm;
+    Account newAccount = new Account();
+    public MudMessageBox MBox { get; set; }
 
+    private async Task Submit()
+    {
+        await addForm.Validate();
+
+        if (addForm.IsValid)
+        {
+
+            if (FetchData.ACService == null)
+            {
+                await MBox.Show();
+                return;
+            }
+            var result = FetchData.ACService.Insert(newAccount);
+            newAccount = new Account();
+        }
+    }
 }

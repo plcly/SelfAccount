@@ -1,63 +1,128 @@
 ﻿@page "/"
 
 @using LiteDBHelper
-<MudStack Style="width:auto">
-<MudStack row Class="d-flex flex-grow-1">
 
-    <MudTextField class="flex-grow-1" @bind-Value="SearchText" @ref="TxtSearch" Placeholder="@placeHolder" Variant="Variant.Text" @onkeyup="SearchData" Adornment="Adornment.Start"
-                  AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Tertiary"></MudTextField>
+<MudStack>
+    <MudStack row Class="d-flex flex-grow-1">
 
-    <MudButton class="mt-5" Color="Color.Primary" Variant="Variant.Filled" @onclick="SearchDataClick">搜索</MudButton>
+        <MudTextField class="flex-grow-1" @bind-Value="SearchText" @ref="TxtSearch" Placeholder="@placeHolder" Variant="Variant.Text" @onkeyup="SearchData" Adornment="Adornment.Start"
+                      AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Tertiary"></MudTextField>
 
+        <MudButton class="mt-5" Color="Color.Primary" Variant="Variant.Filled" @onclick="SearchDataClick">搜索</MudButton>
+
+    </MudStack>
+
+
+
+    @if (result == null)
+    {
+        <p><em>@Message</em></p>
+    }
+    else
+    {
+        <MudGrid Class="border border-solid ma-1 pa-1" Style="width:97%">
+            <MudDataGrid T="Account" @ref="dataGrid" Items="@result"
+                         Class="pa-1 ma-1" Bordered="true" SortMode="SortMode.None" Dense="true" ReadOnly="false"
+                         StartedEditingItem="@StartedEditingItem" CanceledEditingItem="@CanceledEditingItem" CommittedItemChanges="@CommittedItemChanges"
+                         EditTrigger="DataGridEditTrigger.Manual"
+                         ColumnResizeMode="ResizeMode.Column" RowsPerPage="5">
+                <Columns>
+                    <PropertyColumn Property="x => x.AccountCategory" Title="类型" />
+                    <PropertyColumn Property="x => x.AccountName" Title="名称" />
+                    <PropertyColumn Property="x => x.AccountKey" Title="Key" />
+                    <PropertyColumn Property="x => x.AccountValue" Title="Value" />
+                    <TemplateColumn>
+                        <CellTemplate>
+                            <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Edit" OnClick="@context.Actions.StartEditingItemAsync" />
+                        </CellTemplate>
+                    </TemplateColumn>
+                    <TemplateColumn>
+                        <CellTemplate>
+                            <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Filled.Delete" OnClick="@DeleteAccount" />
+                        </CellTemplate>
+                    </TemplateColumn>
+
+                </Columns>
+                <PagerContent>
+                    <MudDataGridPager T="Account" PageSizeOptions=@(new int[] {5, 10, 20}) />
+                </PagerContent>
+            </MudDataGrid>
+        </MudGrid>
+    }
 </MudStack>
-
-
-
-@if (result == null)
-{
-    <p><em>@Message</em></p>
-}
-else
-{
-    <MudDataGrid Items="@result">
-        <Columns>
-            <PropertyColumn Property="x => x.AccountCategory" Title="类型" />
-            <PropertyColumn Property="x => x.AccountName" Title="名称" />
-            <PropertyColumn Property="x => x.AccountKey" Title="Key" />
-            <PropertyColumn Property="x => x.AccountValue" Title="Value" />
-        </Columns>
-    </MudDataGrid>
-
-}
-</MudStack>
-
+<MudMessageBox @ref="MBox" Title="未选择">
+    <MessageContent>
+        请先选择一行
+    </MessageContent>
+</MudMessageBox>
 @code {
-    private Account[] accounts;
-    private Account[] result;
+    private IEnumerable<Account> accounts;
+    private IEnumerable<Account> result;
     public string SearchText { get; set; }
     private string placeHolder;
     private string Message;
-    AccountService service;
+    public static AccountService ACService { get; set; }
     public MudTextField<string> TxtSearch { get; set; }
     public MudIconButton BtnSearch { get; set; }
+    public MudDataGrid<Account> dataGrid;
+    public MudMessageBox MBox { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await TxtSearch.FocusAsync();
+    }
+
     protected override async Task OnInitializedAsync()
     {
         placeHolder = "请输入Key";
         Message = "请输入Key";
     }
 
+    void StartedEditingItem(Account item)
+    {
+
+    }
+
+    void CanceledEditingItem(Account item)
+    {
+
+    }
+
+    void CommittedItemChanges(Account item)
+    {
+        ACService.Update(item);
+    }
+
+    private async void DeleteAccount(MouseEventArgs e)
+    {
+        var item = dataGrid.SelectedItem;
+        if (item == null)
+        {
+            await MBox.Show();
+            return;
+        }
+        if (ACService.Delete(item))
+        {
+            accounts = null;
+            SearchDataClick();
+        }
+    }
+
     private void Init()
     {
         try
         {
-            service = new AccountService(SearchText, Config.IV, Config.DBPwd, Config.DBName);
-            accounts = service.GetAllAccounts().ToArray();
+            if (ACService == null)
+            {
+                ACService = new AccountService(SearchText, Config.IV, Config.DBPwd, Config.DBName);
+            }
+            accounts = ACService.GetAllAccounts().ToList();
             result = accounts;
             ResetSearch();
         }
         catch (Exception ex)
         {
-            service = null;
+            ACService = null;
             Message = ex.Message;
         }
 
@@ -72,11 +137,12 @@ else
 
     private void SearchDataClick()
     {
-        if (service == null)
+        if (accounts == null)
         {
             Init();
             return;
         }
+
         if (string.IsNullOrEmpty(SearchText))
         {
             result = accounts;
@@ -86,7 +152,7 @@ else
             result = accounts.Where(p => p.AccountName.Contains(SearchText, StringComparison.OrdinalIgnoreCase)
                                         || p.AccountKey.Contains(SearchText, StringComparison.OrdinalIgnoreCase)
                                         || p.AccountCategory.Contains(SearchText, StringComparison.OrdinalIgnoreCase))
-                            .ToArray();
+                            .ToList();
             ResetSearch();
         }
     }
