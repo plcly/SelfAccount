@@ -364,3 +364,5 @@ FodyWeavers.xsd
 /SelfAccount/Config.cs
 /UnitTest/DebugErrorTest.cs
 /SelfAccountHybrid/Config.cs
+/SelfAccount.Api/Config.cs
+/SelfAccount.Api/LocalDb
