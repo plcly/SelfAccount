@@ -5,8 +5,9 @@
 <MudStack>
     <MudStack row Class="d-flex flex-grow-1">
 
-        <MudTextField class="flex-grow-1" @bind-Value="SearchText" @ref="TxtSearch" Placeholder="@placeHolder" Variant="Variant.Text" @onkeyup="SearchData" Adornment="Adornment.Start"
-                      AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Tertiary"></MudTextField>
+        <MudTextField @bind-Value="SearchText" @ref="TxtSearch" Placeholder="@placeHolder" Variant="Variant.Text" @onkeyup="SearchData" Adornment="Adornment.Start"
+                      AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Tertiary"
+                      InputType="@inputType"></MudTextField>
 
         <MudButton class="mt-5" Color="Color.Primary" Variant="Variant.Filled" @onclick="SearchDataClick">搜索</MudButton>
 
@@ -66,6 +67,7 @@
     public MudIconButton BtnSearch { get; set; }
     public MudDataGrid<Account> dataGrid;
     public MudMessageBox MBox { get; set; }
+    private InputType inputType;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -76,6 +78,7 @@
     {
         placeHolder = "请输入Key";
         Message = "请输入Key";
+        inputType = InputType.Password;
     }
 
     void StartedEditingItem(Account item)
@@ -115,6 +118,7 @@
             if (ACService == null)
             {
                 ACService = new AccountService(SearchText, Config.IV, Config.DBPwd, Config.DBName);
+                inputType = InputType.Text;
             }
             accounts = ACService.GetAllAccounts().ToList();
             result = accounts;

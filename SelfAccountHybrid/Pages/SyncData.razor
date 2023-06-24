@@ -1,0 +1,90 @@
+﻿@page "/SyncData"
+@using LiteDBHelper;
+@using System.Text.Json;
+
+@inject HttpClient httpClient
+@inject IDialogService DialogService
+
+<MudStack Class="pa-12">
+    <MudText Typo="Typo.h4">@result</MudText>
+    <MudText Typo="Typo.h5">请输入Key和IV</MudText>
+    <MudTextField Label="Key" @bind-Value="key" T="string" tabindex="1" InputType="InputType.Password"></MudTextField>
+    <MudTextField Label="IV" @bind-Value="iv" T="string" InputType="InputType.Password"></MudTextField>
+    <MudTextField Label="URL" @bind-Value="url" T="string" InputType="InputType.Text"></MudTextField>
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mt-10 rounded-lg" @onclick="Pull">拉取</MudButton>
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mt-10 rounded-lg" @onclick="Push">推送</MudButton>
+</MudStack>
+@code {
+    private string key;
+    private string iv;
+    private string url = Config.SyncUrl;
+    private string result;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            result = await httpClient.GetStringAsync($"{url}/test");
+        }
+        catch (Exception ex)
+        {
+            result = ex.Message;
+        }
+
+        await base.OnInitializedAsync();
+    }
+
+    private async void Pull()
+    {
+        try
+        {
+            var address = $"{url}/GetAll?key={key}";
+            var allAccountsStr = await httpClient.GetStringAsync(address);
+            var allAccounts = JsonSerializer.Deserialize<List<Account>>(allAccountsStr);
+            var service = new AccountService(key, Config.IV, Config.DBPwd, Config.DBName);
+            var existAccounts = service.GetAllAccounts();
+            int updatedNum = 0;
+            foreach (var item in allAccounts)
+            {
+                if (existAccounts.Any(p => p.Equals(item)))
+                {
+                    continue;
+                }
+                service.Insert(item);
+                updatedNum++;
+            }
+            result = $"{updatedNum} Updated";
+        }
+        catch (Exception ex)
+        {
+            DialogService.ShowMessageBox("Warning!", ex.Message);
+        }
+    }
+    private async void Push()
+    {
+        try
+        {
+            var service = new AccountService(key, Config.IV, Config.DBPwd, Config.DBName);
+            var existAccounts = service.GetAllAccounts();
+            var json = JsonSerializer.Serialize(existAccounts);
+            var address = $"{url}/PushAll";
+
+            using StringContent jsonContent = new(
+                        JsonSerializer.Serialize(new
+                        {
+                            Key = key,
+                            IV = Config.IV,
+                            Json = json,
+                        }),
+                        System.Text.Encoding.UTF8,
+                        "application/json");
+
+            using var res = await httpClient.PostAsync(address, jsonContent);
+            result = await res.Content.ReadAsStringAsync();
+        }
+        catch (Exception ex)
+        {
+            DialogService.ShowMessageBox("Warning!", ex.Message);
+        }
+    }
+}

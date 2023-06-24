@@ -21,6 +21,11 @@ namespace SelfAccountHybrid
 #endif
             builder.Services.AddMudServices();
 
+            var httpclientHandler = new HttpClientHandler();
+            httpclientHandler.ServerCertificateCustomValidationCallback = (message, cert, chain, error) => true;
+            var httpClient = new HttpClient(httpclientHandler);
+            builder.Services.AddSingleton<HttpClient>(httpClient);
+
             return builder.Build();
         }
     }

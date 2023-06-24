@@ -16,5 +16,24 @@ namespace LiteDBHelper
         public string AccountName { get; set; }
         public string AccountKey { get; set; }
         public string AccountValue { get; set; }
+
+        public override bool Equals(object? obj)
+        {
+            var newAc = obj as Account;
+            if (newAc == null)
+            {
+                return false; 
+            }
+            if (this.AccountCategory == newAc.AccountCategory 
+                && this.AccountCategory == newAc.AccountCategory
+                && this.AccountName == newAc.AccountName
+                && this.AccountKey == newAc.AccountKey
+                && this.AccountValue == newAc.AccountValue
+                )
+            {
+                return true;
+            }
+            return false;
+        }
     }
 }

@@ -18,6 +18,10 @@ namespace LiteDBHelper
                 _dbName = dbName;
             }
             var path = Path.Combine(Environment.CurrentDirectory, _dbName);
+            if (!Directory.Exists(Path.GetDirectoryName(path)))
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(path));
+            }
             _connection = new ConnectionString
             {
                 Filename = path,
