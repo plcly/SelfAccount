@@ -50,7 +50,14 @@
                 {
                     continue;
                 }
-                service.Insert(item);
+                var clone = new Account
+                    {
+                        AccountCategory = item.AccountCategory,
+                        AccountName = item.AccountName,
+                        AccountKey = item.AccountKey,
+                        AccountValue = item.AccountValue,
+                    };
+                service.Insert(clone);
                 updatedNum++;
             }
             result = $"{updatedNum} Updated";

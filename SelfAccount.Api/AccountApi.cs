@@ -46,7 +46,14 @@ namespace SelfAccount.Api
                 {
                     continue;
                 }
-                service.Insert(ac);
+                var clone = new Account
+                {
+                    AccountCategory = ac.AccountCategory,
+                    AccountName = ac.AccountName,
+                    AccountKey = ac.AccountKey,
+                    AccountValue = ac.AccountValue,
+                };
+                service.Insert(clone);
             }
             return true;
         }
