@@ -61,6 +61,7 @@
                 updatedNum++;
             }
             result = $"{updatedNum} Updated";
+            await RefreshPage();
         }
         catch (Exception ex)
         {
@@ -88,10 +89,19 @@
 
             using var res = await httpClient.PostAsync(address, jsonContent);
             result = await res.Content.ReadAsStringAsync();
+            await RefreshPage();
         }
         catch (Exception ex)
         {
             DialogService.ShowMessageBox("Warning!", ex.Message);
         }
+    }
+
+    private async Task RefreshPage()
+    {
+        await InvokeAsync(() =>
+        {
+            StateHasChanged();
+        });
     }
 }
